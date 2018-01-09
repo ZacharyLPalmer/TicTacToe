@@ -16,15 +16,26 @@ int main(int argc, char *argv[])
   while(!game.getWon()) {
     game.draw();
     int xMove, yMove;
-    std::cout << "Enter the X and Y coordinates of the place you want to pick: ";
-    std::cin >> xMove;
-    std::cin >> yMove;
-    if( game.getMoves()%2 == 0 ) {
-      game.pickSpot(xMove, yMove, true);
-    } else {
-      game.pickSpot(xMove, yMove, false);
+    bool success = false;
+    while(!success) {
+      std::cout << "Enter the X coordinates of the place you want to pick: ";
+      std::cin >> xMove;
+      std::cout << "\nEnter the Y coordinates of the place you want to pick: ";
+      std::cin >> yMove;
+      if( game.getMoves()%2 == 0 ) {
+        success = game.pickSpot(xMove, yMove, true);
+      } else {
+        success = game.pickSpot(xMove, yMove, false);
+      }
+      if(!success) {
+        std::cout << "ERROR TRY AGAIN\n\n\n";
+      }
     }
+    game.checkWon();
   }
+  game.draw();
+  std::cout << "Congrats " << game.getWinner() << " you won this hard fought game!";
+  std::cin >> user1;
 }
 
 gameBoard::gameBoard(std::string player1, std::string player2)
@@ -68,16 +79,48 @@ void gameBoard::draw()
   }
 }
 
-
-// allows the user/AI to pick a spot in the tic tac toe board based on the x and y
-// coordinate if XorO is false then the player is o's and if its true the player
-// is x's
-void gameBoard::pickSpot(int x, int y, bool XorO)
+bool gameBoard::pickSpot(int x, int y, bool XorO)
 {
   int marker = 0;
   if(XorO){
     marker = 1;
   }
-  state[x][y] = marker;
-  moves++;
+  if( x > 3 || y > 3) {
+    return false;
+  }
+  x--;
+  y--;
+  if(state[x][y] == -1) {
+    state[x][y] = marker;
+    moves++;
+    return true;
+  }
+  return false;
+}
+
+void gameBoard::checkWon()
+{
+  int victor;
+  if((state[0][0] == state[0][1] && state[0][0] == state[0][2]) ||
+     (state[0][0] == state[1][0] && state[0][0] == state[2][0]) ||
+     (state[0][0] == state[1][1] && state[0][0] == state[2][2])) {
+       victor = state[0][0];
+  } else
+  if((state[1][0] == state[1][1] && state[1][0] == state[1][2]) ||
+     (state[0][1] == state[1][1] && state[0][1] == state[2][1]) ||
+     (state[0][2] == state[1][1] && state[0][2] == state[2][0])) {
+       victor = state[1][1];
+  } else
+  if((state[2][0] == state[2][1] && state[2][0] == state[2][2]) ||
+     (state[0][2] == state[1][2] && state[0][2] == state[2][2])) {
+       victor = state[2][2];
+  }
+    if(victor != -1) {
+      won = true;
+      if(victor == 1) {
+        winner = p1;
+      } else {
+        winner = p2;
+      }
+    }
 }

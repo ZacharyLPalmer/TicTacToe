@@ -22,11 +22,16 @@ void draw();
 
 // allows the user/AI to pick a spot in the tic tac toe board based on the x and y
 // coordinate if XorO is false then the player is o's and if its true the player
-// is x's
-void pickSpot(int x, int y, bool XorO);
+// is x's returns false if space is taken
+bool pickSpot(int x, int y, bool XorO);
+
+// checks if anyone won the game and updates the winnter and won flag
+void checkWon();
+
 
 bool getWon() { return won; }
 int getMoves() { return moves; }
+std::string getWinner() { return winner; } 
 
 private:
 
@@ -39,7 +44,7 @@ int state [3][3];
 bool won;
 
 // strings for the user's names
-std::string p1, p2;
+std::string p1, p2, winner;
 
 // counter for the number of moves it takes for a winner to emerge
 int moves;
